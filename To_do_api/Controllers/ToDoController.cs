@@ -9,51 +9,58 @@ using To_do_api.DTOs;
 
 namespace To_do_api.Controllers
 {
-    [Route("api/User")]
+    [Route("api/User/ToDo")]
     [ApiController]
     public class ToDoController : ControllerBase
     {
         private static List<ToDo> ToDos = new List<ToDo>();
 
         [HttpGet]
-        [Route("{user_id}/ToDos")]
-        public List<ToDo> Get(int user_id)
+        [Route("{user_id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult Get(int user_id)
         {
             if (user_id > 0)
             {
                 List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
-                if (ToDosByUser.Any()) return ToDosByUser;
+                if (ToDosByUser.Any()) return Ok(ToDosByUser);
 
-                throw new Exception("To-dos not found");     
+                return BadRequest("To-dos not found");     
             }
 
-            throw new Exception("Invalid ID");
+            return BadRequest("Invalid ID");
         }
 
         [HttpPost]
         [Route("{user_id}")]
-        public void Post([FromBody] CreateToDoDTO ToDoDTO, int user_id)
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public IActionResult Post(int user_id, [FromBody] CreateToDoDTO ToDoDTO)
         {
             if (user_id > 0)
             {
                 if (string.IsNullOrEmpty(ToDoDTO.Title)
                     || string.IsNullOrEmpty(ToDoDTO.Description)
-                    )  throw new Exception("Title and Description must be filled");
+                    )  return BadRequest("Title and Description must be filled");
 
-                ToDos.Add(
-                    new ToDo(user_id, ToDoDTO.Title, ToDoDTO.Description)
-                    );
+                ToDo toDo = new ToDo(user_id, ToDoDTO.Title, ToDoDTO.Description);
 
-                return;
+                ToDos.Add(toDo);
+
+                return CreatedAtAction("Post", new { id = toDo.Id },toDo);
             }
 
-            throw new Exception("Invalid ID");
+            return BadRequest("Invalid ID");
         }
 
         [HttpPatch]
         [Route("{user_id}/{todo_id}/done")]
-        public void Patch(int user_id, int todo_id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult Patch(int user_id, int todo_id)
         {
             if(user_id > 0 && todo_id > 0)
             {
@@ -69,21 +76,24 @@ namespace To_do_api.Controllers
 
                         ToDoFound.Updated_At = DateTime.Now;
 
-                        return;
+                        return Ok();
                     }
 
-                    throw new Exception("To-do not found");
+                    return NotFound("To-do not found");
                 }
 
-                throw new Exception("User does not have to-dos");
+                return NotFound("User does not have to-dos");
             }
 
-            throw new Exception("Invalid User or To-do ID");
+            return BadRequest("Invalid User or To-do ID");
         }
 
         [HttpPut]
         [Route("{user_id}/{todo_id}")]
-        public void Put(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult Put(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
         {
             if (user_id > 0 && todo_id > 0)
             {
@@ -103,16 +113,16 @@ namespace To_do_api.Controllers
 
                         ToDoFound.Updated_At = DateTime.Now;
 
-                        return;
+                        return Ok();
                     }
 
-                    throw new Exception("To-do not found");
+                    return NotFound("To-do not found");
                 }
 
-                throw new Exception("User does not have to-dos");
+                return NotFound("User does not have to-dos");
             }
 
-            throw new Exception("Invalid User or To-do ID");
+            return BadRequest("Invalid User or To-do ID");
         }
     }
 }
