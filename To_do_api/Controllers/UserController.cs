@@ -16,88 +16,114 @@ namespace To_do_api.Controllers
         private static List<User> Users = new List<User>();
 
         [HttpGet]
-        public List<User> Get()
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult Get()
         {
-            return Users;
+            if(Users.Any()) return Ok(Users);
+
+            return NotFound("There is no users");
         }
 
         [HttpGet]
-        [Route("{Id}")]
-        public User GetUserById(int Id)
+        [Route("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetUserById(int id)
         {
-            User UserToGet = Users.FirstOrDefault(user => user.Id == Id);
+            if (id <= 0) return BadRequest("Invalid ID");
 
-            if (UserToGet != null) return UserToGet;
+            User UserToGet = Users.FirstOrDefault(user => user.Id == id);
 
-            throw new Exception("User not found");
+            if (UserToGet != null) return Ok(UserToGet);
+
+            return NotFound("User not found");
         }
 
         [HttpPost]
-        public void Post([FromBody] CreateUserDTO UserDTO)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult Post([FromBody] CreateUserDTO UserDTO)
         {
             if (!string.IsNullOrEmpty(UserDTO.Email))
             {
                 User UserFound = Users.FirstOrDefault(user => user.Email == UserDTO.Email);
 
-                if(UserFound != null)
+                if(UserFound == null)
                 {
-                    Users.Add(new User(UserDTO.Name, UserDTO.Email, UserDTO.Password));
+                    User user = new User(UserDTO.Name, UserDTO.Email, UserDTO.Password);
+                    Users.Add(user);
 
-                    return;
+                    return CreatedAtAction("Post", new { id = user.Id }, user);
                 }
 
-                throw new Exception("User already exists");
+                return BadRequest("User already exists");
             }
 
-            throw new Exception("Invalid E-mail");
+            return BadRequest("Invalid E-mail");
         }
 
         [HttpPatch]
         [Route("newPassword/{id}")]
-        public void PatchPassword([FromForm] string NewPassword, int Id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult PatchPassword(int id, [FromBody] string newPassword)
         {
-            User UserToUpdate = Users.FirstOrDefault(user => user.Id == Id);
+            if (string.IsNullOrEmpty(newPassword)) return BadRequest("Invalid password");
+
+            if (id <= 0) return BadRequest("Invalid ID");
+
+            User UserToUpdate = Users.FirstOrDefault(user => user.Id == id);
 
             if (UserToUpdate != null)
             {
-                UserToUpdate.Password = NewPassword;
+                UserToUpdate.Password = newPassword;
 
-                return;
+                return Ok();
             }
 
-            throw new Exception("User not found");
+            return NotFound("User not found");
         }
 
         [HttpPatch]
         [Route("{id}")]
-        public void PatchAdmin(int Id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult PatchAdmin(int id)
         {
-            User UserToBeAdmin = Users.FirstOrDefault(user => user.Id == Id);
+            if (id <= 0) return BadRequest("Invalid ID");
+
+            User UserToBeAdmin = Users.FirstOrDefault(user => user.Id == id);
 
             if (UserToBeAdmin != null)
             {
                 UserToBeAdmin.IsAdmin = true;
 
-                return;
+                return Ok();
             }
 
-            throw new Exception("User not found");
+            return NotFound("User not found");
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public void Delete(int Id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult Delete(int id)
         {
-            User UserToDelete = Users.FirstOrDefault(user => user.Id == Id);
+            if (id <= 0) return BadRequest("Invalid ID");
+
+            User UserToDelete = Users.FirstOrDefault(user => user.Id == id);
             
             if (UserToDelete != null)
             {
                 Users.Remove(UserToDelete);
 
-                return;
+                return Ok();
             }
 
-            throw new Exception("User not found");
+            return NotFound("User not found");
         }
     }
 }
