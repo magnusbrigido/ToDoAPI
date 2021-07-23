@@ -64,7 +64,7 @@ namespace To_do_api.Controllers
         }
 
         [HttpPatch]
-        [Route("newPassword/{id}")]
+        [Route("{id}/newPassword")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
