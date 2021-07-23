@@ -53,7 +53,7 @@ namespace To_do_api.Controllers
 
         [HttpPatch]
         [Route("{user_id}/{todo_id}/done")]
-        public void patch(int user_id, int todo_id)
+        public void Patch(int user_id, int todo_id)
         {
             if(user_id > 0 && todo_id > 0)
             {
@@ -66,6 +66,42 @@ namespace To_do_api.Controllers
                     if (ToDoFound != null)
                     {
                         ToDoFound.Done = true;
+
+                        ToDoFound.Updated_At = DateTime.Now;
+
+                        return;
+                    }
+
+                    throw new Exception("To-do not found");
+                }
+
+                throw new Exception("User does not have to-dos");
+            }
+
+            throw new Exception("Invalid User or To-do ID");
+        }
+
+        [HttpPut]
+        [Route("{user_id}/{todo_id}")]
+        public void Put(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
+        {
+            if (user_id > 0 && todo_id > 0)
+            {
+                List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
+
+                if (ToDosByUser.Any())
+                {
+                    ToDo ToDoFound = ToDosByUser.FirstOrDefault(todo => todo.Id == todo_id);
+
+                    if (ToDoFound != null)
+                    {
+                        if (ToDoFound.Title != toDoDTO.Title)
+                            ToDoFound.Title = toDoDTO.Title;
+
+                        if (ToDoFound.Description != toDoDTO.Description)
+                            ToDoFound.Description = toDoDTO.Description;
+
+                        ToDoFound.Updated_At = DateTime.Now;
 
                         return;
                     }
