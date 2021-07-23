@@ -19,6 +19,7 @@ namespace To_do_api.Controllers
         [Route("{user_id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult Get(int user_id)
         {
             if (user_id > 0)
@@ -27,7 +28,7 @@ namespace To_do_api.Controllers
 
                 if (ToDosByUser.Any()) return Ok(ToDosByUser);
 
-                return BadRequest("To-dos not found");     
+                return NotFound("To-dos not found");     
             }
 
             return BadRequest("Invalid ID");
