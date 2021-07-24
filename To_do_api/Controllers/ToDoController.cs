@@ -69,7 +69,7 @@ namespace To_do_api.Controllers
                 
             ToDoFound.Done = true;
                 
-            ToDoFound.Updated_At = DateTime.Now;
+            ToDoFound.UpdatedAt = DateTime.Now;
                 
             return Ok();
         }
@@ -97,7 +97,7 @@ namespace To_do_api.Controllers
             if (ToDoFound.Description != toDoDTO.Description)
                 ToDoFound.Description = toDoDTO.Description;
 
-            ToDoFound.Updated_At = DateTime.Now;
+            ToDoFound.UpdatedAt = DateTime.Now;
 
             return Ok();        
         }
