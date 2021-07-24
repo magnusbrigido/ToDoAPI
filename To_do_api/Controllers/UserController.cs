@@ -18,7 +18,7 @@ namespace To_do_api.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult Get()
+        public IActionResult GetUsers()
         {
             if(Users.Any()) return Ok(Users);
 
@@ -35,32 +35,27 @@ namespace To_do_api.Controllers
 
             User UserToGet = Users.FirstOrDefault(user => user.Id == id);
 
-            if (UserToGet != null) return Ok(UserToGet);
+            if (UserToGet == null) return NotFound("User not found");
 
-            return NotFound("User not found");
+            return Ok(UserToGet);
         }
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody] CreateUserDTO UserDTO)
+        public IActionResult CreateUser([FromBody] CreateUserDTO UserDTO)
         {
-            if (!string.IsNullOrEmpty(UserDTO.Email))
-            {
-                User UserFound = Users.FirstOrDefault(user => user.Email == UserDTO.Email);
-
-                if(UserFound == null)
-                {
-                    User user = new User(UserDTO.Name, UserDTO.Email, UserDTO.Password);
-                    Users.Add(user);
-
-                    return CreatedAtAction("Post", new { id = user.Id }, user);
-                }
-
-                return BadRequest("User already exists");
-            }
-
-            return BadRequest("Invalid E-mail");
+            if (string.IsNullOrEmpty(UserDTO.Email)) return BadRequest("Invalid E-mail");
+            
+            User UserFound = Users.FirstOrDefault(user => user.Email == UserDTO.Email);
+            
+            if(UserFound != null) return BadRequest("User already exists");
+            
+            User user = new User(UserDTO.Name, UserDTO.Email, UserDTO.Password);
+            
+            Users.Add(user);
+            
+            return CreatedAtAction("Post", new { id = user.Id }, user);
         }
 
         [HttpPatch]
@@ -68,7 +63,7 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult PatchPassword(int id, [FromBody] string newPassword)
+        public IActionResult ChangePassword(int id, [FromBody] string newPassword)
         {
             if (string.IsNullOrEmpty(newPassword)) return BadRequest("Invalid password");
 
@@ -76,54 +71,45 @@ namespace To_do_api.Controllers
 
             User UserToUpdate = Users.FirstOrDefault(user => user.Id == id);
 
-            if (UserToUpdate != null)
-            {
-                UserToUpdate.Password = newPassword;
+            if (UserToUpdate == null) return NotFound("User not found");
 
-                return Ok();
-            }
-
-            return NotFound("User not found");
+            UserToUpdate.Password = newPassword;
+            
+            return Ok();
         }
 
         [HttpPatch]
         [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult PatchAdmin(int id)
+        public IActionResult BecomeAdmin(int id)
         {
             if (id <= 0) return BadRequest("Invalid ID");
 
             User UserToBeAdmin = Users.FirstOrDefault(user => user.Id == id);
 
-            if (UserToBeAdmin != null)
-            {
-                UserToBeAdmin.IsAdmin = true;
-
-                return Ok();
-            }
-
-            return NotFound("User not found");
+            if (UserToBeAdmin == null) return NotFound("User not found");
+            
+            UserToBeAdmin.IsAdmin = true;
+            
+            return Ok();
         }
 
         [HttpDelete]
         [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteUser(int id)
         {
             if (id <= 0) return BadRequest("Invalid ID");
 
             User UserToDelete = Users.FirstOrDefault(user => user.Id == id);
             
-            if (UserToDelete != null)
-            {
-                Users.Remove(UserToDelete);
-
-                return Ok();
-            }
-
-            return NotFound("User not found");
+            if (UserToDelete == null) return NotFound("User not found");
+            
+            Users.Remove(UserToDelete);
+            
+            return Ok();
         }
     }
 }
