@@ -20,40 +20,34 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult Get(int user_id)
+        public IActionResult GetUsersToDo(int user_id)
         {
-            if (user_id > 0)
-            {
-                List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
+            if (user_id <= 0) return BadRequest("Invalid ID");
+            
+            List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
-                if (ToDosByUser.Any()) return Ok(ToDosByUser);
+            if (!ToDosByUser.Any()) return NotFound("To-dos not found");
 
-                return NotFound("To-dos not found");     
-            }
-
-            return BadRequest("Invalid ID");
+            return Ok(ToDosByUser);
         }
 
         [HttpPost]
         [Route("{user_id}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult Post(int user_id, [FromBody] CreateToDoDTO ToDoDTO)
+        public IActionResult CreateToDo(int user_id, [FromBody] CreateToDoDTO ToDoDTO)
         {
-            if (user_id > 0)
-            {
-                if (string.IsNullOrEmpty(ToDoDTO.Title)
-                    || string.IsNullOrEmpty(ToDoDTO.Description)
-                    )  return BadRequest("Title and Description must be filled");
-
-                ToDo toDo = new ToDo(user_id, ToDoDTO.Title, ToDoDTO.Description);
-
-                ToDos.Add(toDo);
-
-                return CreatedAtAction("Post", new { id = toDo.Id },toDo);
-            }
-
-            return BadRequest("Invalid ID");
+            if (user_id <= 0) return BadRequest("Invalid ID");
+            
+            if (string.IsNullOrEmpty(ToDoDTO.Title)
+                || string.IsNullOrEmpty(ToDoDTO.Description)
+                )  return BadRequest("Title and Description must be filled");
+            
+            ToDo toDo = new ToDo(user_id, ToDoDTO.Title, ToDoDTO.Description);
+            
+            ToDos.Add(toDo);
+            
+            return CreatedAtAction("Post", new { id = toDo.Id },toDo);
         }
 
         [HttpPatch]
@@ -61,32 +55,23 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult Patch(int user_id, int todo_id)
+        public IActionResult TaskComplete(int user_id, int todo_id)
         {
-            if(user_id > 0 && todo_id > 0)
-            {
-                List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
+            if(user_id <= 0 && todo_id <= 0) return BadRequest("Invalid User or To-do ID");
+            
+            List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
-                if (ToDosByUser.Any())
-                {
-                    ToDo ToDoFound = ToDosByUser.FirstOrDefault(todo => todo.Id == todo_id);
-
-                    if (ToDoFound != null)
-                    {
-                        ToDoFound.Done = true;
-
-                        ToDoFound.Updated_At = DateTime.Now;
-
-                        return Ok();
-                    }
-
-                    return NotFound("To-do not found");
-                }
-
-                return NotFound("User does not have to-dos");
-            }
-
-            return BadRequest("Invalid User or To-do ID");
+            if (!ToDosByUser.Any()) return NotFound("User does not have to-dos");
+                
+            ToDo ToDoFound = ToDosByUser.FirstOrDefault(todo => todo.Id == todo_id);
+                
+            if (ToDoFound == null) return NotFound("To-do not found");
+                
+            ToDoFound.Done = true;
+                
+            ToDoFound.Updated_At = DateTime.Now;
+                
+            return Ok();
         }
 
         [HttpPut]
@@ -94,36 +79,27 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult Put(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
+        public IActionResult ChangeTitleOrDescription(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
         {
-            if (user_id > 0 && todo_id > 0)
-            {
-                List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
+            if (user_id <= 0 && todo_id <= 0) return BadRequest("Invalid User or To-do ID");
 
-                if (ToDosByUser.Any())
-                {
-                    ToDo ToDoFound = ToDosByUser.FirstOrDefault(todo => todo.Id == todo_id);
+            List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
-                    if (ToDoFound != null)
-                    {
-                        if (ToDoFound.Title != toDoDTO.Title)
-                            ToDoFound.Title = toDoDTO.Title;
+            if (!ToDosByUser.Any()) return NotFound("User does not have to-dos");
 
-                        if (ToDoFound.Description != toDoDTO.Description)
-                            ToDoFound.Description = toDoDTO.Description;
+            ToDo ToDoFound = ToDosByUser.FirstOrDefault(todo => todo.Id == todo_id);
 
-                        ToDoFound.Updated_At = DateTime.Now;
+            if (ToDoFound == null) return NotFound("To-do not found");
 
-                        return Ok();
-                    }
+            if (ToDoFound.Title != toDoDTO.Title)
+                ToDoFound.Title = toDoDTO.Title;
+            
+            if (ToDoFound.Description != toDoDTO.Description)
+                ToDoFound.Description = toDoDTO.Description;
 
-                    return NotFound("To-do not found");
-                }
+            ToDoFound.Updated_At = DateTime.Now;
 
-                return NotFound("User does not have to-dos");
-            }
-
-            return BadRequest("Invalid User or To-do ID");
+            return Ok();        
         }
     }
 }
