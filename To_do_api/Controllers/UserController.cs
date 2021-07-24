@@ -53,7 +53,7 @@ namespace To_do_api.Controllers
             
             Users.Add(user);
             
-            return CreatedAtAction("Post", new { id = user.Id }, user);
+            return CreatedAtAction("CreateUser", new { id = user.Id }, user);
         }
 
         [HttpPatch]

@@ -42,7 +42,7 @@ namespace To_do_api.Controllers
             
             ToDos.Add(toDo);
             
-            return CreatedAtAction("Post", new { id = toDo.Id },toDo);
+            return CreatedAtAction("CreateToDo", new { id = toDo.Id },toDo);
         }
 
         [HttpPatch]
