@@ -31,8 +31,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetUserById(Guid id)
         {
-            if (!(id is Guid)) return BadRequest("Invalid ID");
-
             User UserToGet = Users.FirstOrDefault(user => user.Id == id);
 
             if (UserToGet == null) return NotFound("User not found");
@@ -67,8 +65,6 @@ namespace To_do_api.Controllers
         {
             if (string.IsNullOrEmpty(newPassword)) return BadRequest("Invalid password");
 
-            if (!(id is Guid)) return BadRequest("Invalid ID");
-
             User UserToUpdate = Users.FirstOrDefault(user => user.Id == id);
 
             if (UserToUpdate == null) return NotFound("User not found");
@@ -84,8 +80,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult BecomeAdmin(Guid id)
         {
-            if (!(id is Guid)) return BadRequest("Invalid ID");
-
             User UserToBeAdmin = Users.FirstOrDefault(user => user.Id == id);
 
             if (UserToBeAdmin == null) return NotFound("User not found");
@@ -101,8 +95,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteUser(Guid id)
         {
-            if (!(id is Guid)) return BadRequest("Invalid ID");
-
             User UserToDelete = Users.FirstOrDefault(user => user.Id == id);
             
             if (UserToDelete == null) return NotFound("User not found");

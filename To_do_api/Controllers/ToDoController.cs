@@ -22,8 +22,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetUsersToDo(Guid user_id)
         {
-            if (!(user_id is Guid)) return BadRequest("Invalid ID");
-
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
             if (!ToDosByUser.Any()) return NotFound("To-dos not found");
@@ -37,8 +35,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateToDo(Guid user_id, [FromBody] CreateToDoDTO ToDoDTO)
         {
-            if (!(user_id is Guid)) return BadRequest("Invalid ID");
-
             if (string.IsNullOrEmpty(ToDoDTO.Title)
                 || string.IsNullOrEmpty(ToDoDTO.Description)
                 )  return BadRequest("Title and Description must be filled");
@@ -57,8 +53,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult TaskComplete(Guid user_id, Guid todo_id)
         {
-            if(!(user_id is Guid) && !(todo_id is Guid)) return BadRequest("Invalid User or To-do ID");
-            
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
             if (!ToDosByUser.Any()) return NotFound("User does not have to-dos");
@@ -81,8 +75,6 @@ namespace To_do_api.Controllers
         [ProducesResponseType(404)]
         public IActionResult Edit(Guid user_id, Guid todo_id, [FromBody] CreateToDoDTO toDoDTO)
         {
-            if (!(user_id is Guid) && !(user_id is Guid)) return BadRequest("Invalid User or To-do ID");
-
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
             if (!ToDosByUser.Any()) return NotFound("User does not have to-dos");
