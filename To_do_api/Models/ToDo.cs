@@ -13,8 +13,8 @@ namespace To_do_api.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public bool Done { get; set; }
-        public DateTime Created_At { get; set; }
-        public DateTime Updated_At { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public ToDo(int user_id, string title, string description)
         {
@@ -23,8 +23,8 @@ namespace To_do_api.Models
             Title = title;
             Description = description;
             Done = false;
-            Created_At = DateTime.Now;
-            Updated_At = DateTime.Now;
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
             i++;
         }
     }
