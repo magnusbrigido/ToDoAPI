@@ -29,9 +29,9 @@ namespace To_do_api.Controllers
         [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult GetUserById(int id)
+        public IActionResult GetUserById(Guid id)
         {
-            if (id <= 0) return BadRequest("Invalid ID");
+            if (!(id is Guid)) return BadRequest("Invalid ID");
 
             User UserToGet = Users.FirstOrDefault(user => user.Id == id);
 
@@ -63,11 +63,11 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult ChangePassword(int id, [FromBody] string newPassword)
+        public IActionResult ChangePassword(Guid id, [FromBody] string newPassword)
         {
             if (string.IsNullOrEmpty(newPassword)) return BadRequest("Invalid password");
 
-            if (id <= 0) return BadRequest("Invalid ID");
+            if (!(id is Guid)) return BadRequest("Invalid ID");
 
             User UserToUpdate = Users.FirstOrDefault(user => user.Id == id);
 
@@ -82,9 +82,9 @@ namespace To_do_api.Controllers
         [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult BecomeAdmin(int id)
+        public IActionResult BecomeAdmin(Guid id)
         {
-            if (id <= 0) return BadRequest("Invalid ID");
+            if (!(id is Guid)) return BadRequest("Invalid ID");
 
             User UserToBeAdmin = Users.FirstOrDefault(user => user.Id == id);
 
@@ -99,9 +99,9 @@ namespace To_do_api.Controllers
         [Route("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser(int id)
+        public IActionResult DeleteUser(Guid id)
         {
-            if (id <= 0) return BadRequest("Invalid ID");
+            if (!(id is Guid)) return BadRequest("Invalid ID");
 
             User UserToDelete = Users.FirstOrDefault(user => user.Id == id);
             

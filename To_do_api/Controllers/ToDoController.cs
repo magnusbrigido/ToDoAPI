@@ -20,10 +20,10 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetUsersToDo(int user_id)
+        public IActionResult GetUsersToDo(Guid user_id)
         {
-            if (user_id <= 0) return BadRequest("Invalid ID");
-            
+            if (!(user_id is Guid)) return BadRequest("Invalid ID");
+
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
             if (!ToDosByUser.Any()) return NotFound("To-dos not found");
@@ -35,10 +35,10 @@ namespace To_do_api.Controllers
         [Route("{user_id}")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public IActionResult CreateToDo(int user_id, [FromBody] CreateToDoDTO ToDoDTO)
+        public IActionResult CreateToDo(Guid user_id, [FromBody] CreateToDoDTO ToDoDTO)
         {
-            if (user_id <= 0) return BadRequest("Invalid ID");
-            
+            if (!(user_id is Guid)) return BadRequest("Invalid ID");
+
             if (string.IsNullOrEmpty(ToDoDTO.Title)
                 || string.IsNullOrEmpty(ToDoDTO.Description)
                 )  return BadRequest("Title and Description must be filled");
@@ -55,9 +55,9 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult TaskComplete(int user_id, int todo_id)
+        public IActionResult TaskComplete(Guid user_id, Guid todo_id)
         {
-            if(user_id <= 0 && todo_id <= 0) return BadRequest("Invalid User or To-do ID");
+            if(!(user_id is Guid) && !(todo_id is Guid)) return BadRequest("Invalid User or To-do ID");
             
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
@@ -79,9 +79,9 @@ namespace To_do_api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult ChangeTitleOrDescription(int user_id, int todo_id, [FromBody] CreateToDoDTO toDoDTO)
+        public IActionResult Edit(Guid user_id, Guid todo_id, [FromBody] CreateToDoDTO toDoDTO)
         {
-            if (user_id <= 0 && todo_id <= 0) return BadRequest("Invalid User or To-do ID");
+            if (!(user_id is Guid) && !(user_id is Guid)) return BadRequest("Invalid User or To-do ID");
 
             List<ToDo> ToDosByUser = ToDos.FindAll(todo => todo.User_Id == user_id);
 
@@ -91,11 +91,9 @@ namespace To_do_api.Controllers
 
             if (ToDoFound == null) return NotFound("To-do not found");
 
-            if (ToDoFound.Title != toDoDTO.Title)
-                ToDoFound.Title = toDoDTO.Title;
+            ToDoFound.Title = toDoDTO.Title;
             
-            if (ToDoFound.Description != toDoDTO.Description)
-                ToDoFound.Description = toDoDTO.Description;
+            ToDoFound.Description = toDoDTO.Description;
 
             ToDoFound.UpdatedAt = DateTime.Now;
 
