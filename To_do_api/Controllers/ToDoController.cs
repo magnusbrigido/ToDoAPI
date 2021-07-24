@@ -18,7 +18,6 @@ namespace To_do_api.Controllers
         [HttpGet]
         [Route("{user_id}")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetUsersToDo(Guid user_id)
         {
@@ -49,7 +48,6 @@ namespace To_do_api.Controllers
         [HttpPatch]
         [Route("{user_id}/{todo_id}/done")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult TaskComplete(Guid user_id, Guid todo_id)
         {
@@ -71,7 +69,6 @@ namespace To_do_api.Controllers
         [HttpPut]
         [Route("{user_id}/{todo_id}")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult Edit(Guid user_id, Guid todo_id, [FromBody] CreateToDoDTO toDoDTO)
         {
