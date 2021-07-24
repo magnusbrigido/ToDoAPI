@@ -22,7 +22,6 @@ namespace To_do_api.Models
             Password = password;
             IsAdmin = false;
             CreatedAt = DateTime.Now;
-            i++;
         }
     }
 }
